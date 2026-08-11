@@ -1,0 +1,35 @@
+<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nexora 26 — Pobieranie</title><style>:root{--i:#261923;--o:#ff9b6e;--p:#ff8fba;--v:#9b88ff;--y:#ffd86c}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 10% 10%,#ffe0c9,transparent 30%),radial-gradient(circle at 90% 15%,#e9dfff,transparent 30%),#fff6ea;color:var(--i);font-family:system-ui,-apple-system,sans-serif}.box{width:min(700px,100%);padding:36px;border:4px solid var(--i);border-radius:32px;background:#fffdf8;box-shadow:12px 12px 0 var(--i)}h1{font-size:clamp(42px,7vw,70px);line-height:.95;margin:0 0 16px}p{font-size:18px;line-height:1.55}.bar{height:22px;margin:24px 0;border:3px solid var(--i);border-radius:99px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--o),var(--p),var(--v));transition:.2s}.status{font-weight:900}.back{display:inline-block;margin-top:22px;padding:12px 16px;border:3px solid var(--i);border-radius:14px;background:var(--y);box-shadow:4px 4px 0 var(--i);font-weight:900;color:var(--i);text-decoration:none}.error{color:#b42318}</style></head><body><main class="box"><h1>Nexora 26<br>Virel Beta 1</h1><p>Pobieranie publicznego ZIP-a. Bez Google Drive i bez logowania.</p><div class="bar"><div class="fill" id="fill"></div></div><div id="status" class="status">Uruchamianie…</div><a class="back" href="nexora-release-20260811.html#download">← Wróć</a></main><script>
+(async()=>{
+ const st=document.getElementById('status'), fill=document.getElementById('fill');
+ const base='https://raw.githubusercontent.com/Nexora-Tech26/OmegaOS/nexora-hosting/downloads/';
+ const clean=s=>s.replace(/^\uFEFF/,'').replace(/-/g,'+').replace(/_/g,'/').replace(/[^A-Za-z0-9+/=]/g,'');
+ const decode=s=>{s=clean(s);while(s.length%4)s+='=';const r=atob(s),u=new Uint8Array(r.length);for(let i=0;i<r.length;i++)u[i]=r.charCodeAt(i);return u};
+ try{
+   const parts=[];
+   for(let i=0;i<7;i++){
+     st.textContent=`Pobieranie danych ${i+1}/7…`;
+     const r=await fetch(base+`nexora-beta1.part${i}.b64?x=20260811`,{cache:'no-store'});
+     if(!r.ok)throw new Error(`część ${i+1}: HTTP ${r.status}`);
+     parts.push(clean(await r.text()));
+     fill.style.width=`${Math.round((i+1)/7*72)}%`;
+   }
+   st.textContent='Weryfikowanie danych…';
+   let chunks=[];
+   const internalPadding=parts.slice(0,-1).some(x=>x.includes('='));
+   if(internalPadding){
+     chunks=parts.map(decode);
+   }else{
+     let joined=parts.join('');
+     chunks=[decode(joined)];
+   }
+   const total=chunks.reduce((n,c)=>n+c.length,0);
+   const bytes=new Uint8Array(total);let off=0;for(const c of chunks){bytes.set(c,off);off+=c.length}
+   if(bytes.length<4||bytes[0]!==0x50||bytes[1]!==0x4b)throw new Error('dane nie tworzą poprawnego pliku ZIP');
+   fill.style.width='92%';st.textContent='Tworzenie pliku ZIP…';
+   const blob=new Blob([bytes],{type:'application/zip'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+   a.href=url;a.download='Nexora_26_Virel_Beta_1.zip';document.body.appendChild(a);a.click();a.remove();
+   fill.style.width='100%';st.textContent=`Gotowe — pobieranie rozpoczęte (${(bytes.length/1024/1024).toFixed(2)} MB).`;
+   setTimeout(()=>URL.revokeObjectURL(url),60000);
+ }catch(e){st.classList.add('error');st.textContent='Błąd pobierania: '+e.message;fill.style.width='0%'}
+})();
+</script></body></html>
