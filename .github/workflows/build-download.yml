@@ -1,4 +1,4 @@
-name: Build Nexora public download
+name: Recover exact Nexora ZIP
 
 on:
   push:
@@ -9,29 +9,53 @@ permissions:
   contents: write
 
 jobs:
-  build-download:
+  recover:
     if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download hosted parts
+      - name: Download hosted chunks
         run: |
           mkdir -p downloads tmp_parts
           for i in 0 1 2 3 4 5 6; do
             curl -fL --retry 4 "https://raw.githubusercontent.com/Nexora-Tech26/OmegaOS/nexora-hosting/downloads/nexora-beta1.part${i}.b64" -o "tmp_parts/part${i}.b64"
           done
-      - name: Assemble ZIP
+      - name: Recover exact byte order by SHA-256
+        shell: python
         run: |
-          cat tmp_parts/part*.b64 | tr -d '\r\n' | base64 --decode > downloads/Nexora_26_Virel_Beta_1.zip
-          test -s downloads/Nexora_26_Virel_Beta_1.zip
-          file downloads/Nexora_26_Virel_Beta_1.zip
+          import base64, hashlib, itertools, pathlib, sys
+          target='d74685054a00c5cbe64019b10aa0fb2722c818ecf91d768becc3ec53ac84c6ff'
+          chunks=[]
+          for i in range(7):
+              text=pathlib.Path(f'tmp_parts/part{i}.b64').read_text().strip()
+              text=''.join(text.split()).replace('-','+').replace('_','/')
+              text += '='*((4-len(text)%4)%4)
+              try:
+                  data=base64.b64decode(text, validate=False)
+              except Exception as e:
+                  print('decode failed',i,e)
+                  sys.exit(2)
+              chunks.append(data)
+              print(i, len(data), data[:8].hex())
+          out=pathlib.Path('downloads/Nexora_26_Virel_Beta_1.zip')
+          for n,p in enumerate(itertools.permutations(range(7)),1):
+              blob=b''.join(chunks[i] for i in p)
+              if hashlib.sha256(blob).hexdigest()==target:
+                  print('FOUND ORDER',p)
+                  out.write_bytes(blob)
+                  break
+          else:
+              print('No permutation matched target SHA-256')
+              sys.exit(3)
+      - name: Verify ZIP
+        run: |
+          test "$(sha256sum downloads/Nexora_26_Virel_Beta_1.zip | awk '{print $1}')" = "d74685054a00c5cbe64019b10aa0fb2722c818ecf91d768becc3ec53ac84c6ff"
           unzip -t downloads/Nexora_26_Virel_Beta_1.zip
-          sha256sum downloads/Nexora_26_Virel_Beta_1.zip
-      - name: Commit public ZIP
+      - name: Commit verified ZIP
         run: |
           git config user.name "Nexora Technologies"
           git config user.email "actions@users.noreply.github.com"
           git add downloads/Nexora_26_Virel_Beta_1.zip
           git diff --cached --quiet && exit 0
-          git commit -m "Add Nexora 26 Virel Beta 1 public ZIP"
+          git commit -m "Add verified Nexora 26 Virel Beta 1 ZIP"
           git push
