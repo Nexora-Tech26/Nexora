@@ -1,0 +1,34 @@
+name: Patch Nexora download links
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-download-links.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch download buttons
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('website/index.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('Strona prezentuje aktualne wersje z dostarczonych archiwów. Publiczne pliki binarne/ZIP muszą zostać podpięte do hostingu, zanim przyciski staną się bezpośrednimi linkami pobierania.', 'Poniższe przyciski prowadzą bezpośrednio do aktualnych archiwów ZIP dostarczonych dla Nexora 26, Nexora Browser i Nexora Office.')
+          s = s.replace('<button class="btn primary pending">Podłącz plik ZIP</button>', '<a class="btn primary" href="https://drive.google.com/uc?export=download&id=1IGHxAFI5ObXslk6-II7xpyx9FTkYQONE">Pobierz ZIP · Nexora 26</a>')
+          s = s.replace('<button class="btn round pending">Podłącz plik ZIP</button>', '<a class="btn round" href="https://drive.google.com/uc?export=download&id=10NCEI4s3stdTHCHlGe01cfEhnfQJEeQt">Pobierz ZIP · Browser 1.4.0</a>')
+          s = s.replace('<button class="btn angle pending">Podłącz plik ZIP</button>', '<a class="btn angle" href="https://drive.google.com/uc?export=download&id=1ixkBxAsuFrXoh2Dy_RFqm1v4qb09RlCd">Pobierz ZIP · Office 0.4.0</a>')
+          s = s.replace(";document.querySelectorAll('.pending').forEach(b=>b.addEventListener('click',()=>{b.textContent='Plik do podpięcia na hostingu';setTimeout(()=>b.textContent='Podłącz plik ZIP',2200)}));", ';')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "Nexora Site Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add website/index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Podłącz ZIP-y do strony"
+          git push
