@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "apps": [
+    {
+      "id": "nexora.server.monitor",
+      "name": "Server Monitor",
+      "version": "1.0.0",
+      "description": "Testowa aplikacja Nexora do podglądu podstawowych informacji systemowych",
+      "category": "Server",
+      "publisher": "Nexora Test Collection",
+      "url": "https://raw.githubusercontent.com/Nexora-Tech26/Nexora/main/nexora-store/nexora.server.monitor.zip",
+      "sha256": "c517aaddf6456d4d6cce86a7f9db07978f46653dbf7b8c707a6f69ff1770c0d9"
+    },
+    {
+      "id": "nexora.server.logs",
+      "name": "Log Inspector",
+      "version": "1.0.0",
+      "description": "Testowa aplikacja Nexora do notatek diagnostycznych i logów",
+      "category": "Server",
+      "publisher": "Nexora Test Collection",
+      "url": "https://raw.githubusercontent.com/Nexora-Tech26/Nexora/main/nexora-store/nexora.server.logs.zip",
+      "sha256": "b080e40af00ebb5f8377834ff44557d963c7f7ab4dd1cd258071b8b157827ecd"
+    },
+    {
+      "id": "nexora.business.notes",
+      "name": "Business Notes",
+      "version": "1.0.0",
+      "description": "Testowa aplikacja Nexora do notatek biznesowych",
+      "category": "Business",
+      "publisher": "Nexora Test Collection",
+      "url": "https://raw.githubusercontent.com/Nexora-Tech26/Nexora/main/nexora-store/nexora.business.notes.zip",
+      "sha256": "4890f9916b7081f995f2cfdadf59fb0a983655b8525e992aeb4fc94bf1b92a66"
+    }
+  ],
+  "packs": [
+    {
+      "id": "nexora.server.pack",
+      "name": "Server Pack",
+      "description": "Zestaw Server Monitor i Log Inspector",
+      "apps": [
+        "nexora.server.monitor",
+        "nexora.server.logs"
+      ]
+    },
+    {
+      "id": "nexora.test.pack",
+      "name": "Nexora Test Pack",
+      "description": "Wszystkie 3 testowe aplikacje",
+      "apps": [
+        "nexora.server.monitor",
+        "nexora.server.logs",
+        "nexora.business.notes"
+      ]
+    }
+  ]
+}
