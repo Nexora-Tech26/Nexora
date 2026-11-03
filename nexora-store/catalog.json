@@ -33,9 +33,9 @@
     },
     {
       "id": "nexora.pro.developer.studio",
-      "name": "Developer Studio PRO",
+      "name": "Code Editor PRO",
       "version": "1.1.0",
-      "description": "Code Editor for Nexora apps: Python and NexoraScript in one IDE, multi-file projects, ZIP import, selectable main entrypoint, Store-ready package export.",
+      "description": "Advanced code editor for Nexora applications with Python and built-in NexoraScript, multi-file projects and Store ZIP export with selected startup file.",
       "category": "Developer",
       "publisher": "Nexora Technologies",
       "url": "https://raw.githubusercontent.com/Nexora-Tech26/Nexora/main/nexora-store/nexora.pro.developer.studio-1.1.0.nexora.zip",
@@ -60,6 +60,14 @@
         "nexora.server.monitor",
         "nexora.server.logs",
         "nexora.business.notes"
+      ]
+    },
+    {
+      "id": "nexora.developer.pack",
+      "name": "Developer Pack",
+      "description": "Currently available online: Code Editor PRO. Other developer tools will appear when published as valid independent packages.",
+      "apps": [
+        "nexora.pro.developer.studio"
       ]
     }
   ]
