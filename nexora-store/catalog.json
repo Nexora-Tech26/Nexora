@@ -30,6 +30,16 @@
       "publisher": "Nexora Test Collection",
       "url": "https://raw.githubusercontent.com/Nexora-Tech26/Nexora/main/nexora-store/nexora.business.notes.zip",
       "sha256": "4890f9916b7081f995f2cfdadf59fb0a983655b8525e992aeb4fc94bf1b92a66"
+    },
+    {
+      "id": "nexora.pro.developer.studio",
+      "name": "Developer Studio PRO",
+      "version": "1.1.0",
+      "description": "Code Editor for Nexora apps: Python and NexoraScript in one IDE, multi-file projects, ZIP import, selectable main entrypoint, Store-ready package export.",
+      "category": "Developer",
+      "publisher": "Nexora Technologies",
+      "url": "https://raw.githubusercontent.com/Nexora-Tech26/Nexora/main/nexora-store/nexora.pro.developer.studio-1.1.0.nexora.zip",
+      "sha256": "53ef78e8a23f2c9e3cfcbc8fcc84e14400ee4d0d81161a0c96debba837ea9ddb"
     }
   ],
   "packs": [
